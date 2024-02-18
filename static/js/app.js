@@ -13,6 +13,7 @@ function init() {
         // Display charts and metadata for the first sample
         let firstSample = data.names[0];
         buildCharts(firstSample);
+        buildMetadata(firstSample);
     
     });
 }
@@ -43,5 +44,57 @@ function buildCharts(sample) {
         };
 
         Plotly.newPlot("bar", barData, barLayout);
+
+        // Build bubble chart
+        let bubbleData = [{
+            x: otuIds,
+            y: sampleValues,
+            text: otuLabels,
+            mode: "markers",
+            marker: {
+                size: sampleValues,
+                color: otuIds,
+                colorscale: "Earth"
+            }
+        }];
+
+        let bubbleLayout = {
+            title: "OTU Bubble Chart",
+            xaxis: { title: "OTU ID" },
+            yaxis: { title: "Sample Value" },
+            showlegend: false,
+            height: 600,
+            width: 1000
+        };
+
+        Plotly.newPlot("bubble", bubbleData, bubbleLayout);
     });
 }
+
+// Function to display metadata
+function buildMetadata(sample) {
+    d3.json("samples.json").then((data) => {
+        let metadata = data.metadata;
+        let resultArray = metadata.filter(obj => obj.id == sample);
+        let result = resultArray[0];
+
+        // Clear existing metadata
+        let metadataPanel = d3.select("#sample-metadata");
+        metadataPanel.html("");
+
+        // Append each key-value pair to the panel
+        Object.entries(result).forEach(([key, value]) => {
+            metadataPanel.append("p").text(`${key}: ${value}`);
+        });
+    });
+}
+
+// Function to handle dropdown menu change
+function optionChanged(newSample) {
+    // Update charts and metadata for new sample
+    buildCharts(newSample);
+    buildMetadata(newSample);
+}
+
+// Initialize the dashboard
+init();
