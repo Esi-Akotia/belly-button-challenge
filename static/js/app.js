@@ -13,7 +13,7 @@ function init() {
         // Display charts and metadata for the first sample
         let firstSample = data.names[0];
         buildCharts(firstSample);
-        buildMetadata(firstSample);
+    
     });
 }
 
@@ -45,5 +45,3 @@ function buildCharts(sample) {
         Plotly.newPlot("bar", barData, barLayout);
     });
 }
-
-init()
